@@ -20,8 +20,13 @@
     "commit-msg": "commitlint -e"
   },
   "dependencies": {
+    "@bgd-labs/aave-address-book": "^3.2.1",
+    "@tanstack/react-query": "^5.53.3",
+    "@web3modal/wagmi": "^5.1.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "viem": "^2.21.1",
+    "wagmi": "^2.12.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.4.1",
