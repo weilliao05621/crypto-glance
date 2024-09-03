@@ -1,9 +1,11 @@
 import { AaveV3Sepolia, AaveV3Ethereum } from "@bgd-labs/aave-address-book";
 
+// constants
 import { ChainId, type ValidChainId } from "~/constants/chains/chainId";
-import type { Address } from "~/types";
-
 import { TOKEN_NAME, type ValidTokenName } from "./list";
+
+// types
+import type { Address } from "~/types";
 
 type TOKEN_PRICES_MAP = {
   [C in ValidChainId]: {

@@ -1,4 +1,4 @@
-import { TokenName } from "~/types";
+import type { TokenName } from "~/types";
 
 export const TOKEN_NAME = {
   ETH: "ETH" as TokenName,
