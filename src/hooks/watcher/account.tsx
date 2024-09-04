@@ -12,35 +12,42 @@ import {
   useGetNativeAssetBalanceQuery,
 } from "../query/assets";
 
-// hooks
-import { useAccount } from "../wagmi/useAccount";
+// types
+import type { Address, ChainId } from "~/types";
 
-export const UpdateAssetsOnAccountConnection = () => {
-  const account = useAccount();
+export const UpdateAssetsOnAccountConnection = (props: {
+  address: Address;
+  chainId: ChainId;
+  enabled: boolean;
+}) => {
   const resetAssetsStore = useAssetsStore((state) => state.reset);
 
   const getNativeAssetBalanceQuery = useGetNativeAssetBalanceQuery({
-    address: account.address,
+    address: props.address,
   });
 
   const getAvailableErc20AssetsBalanceQuery =
     useGetAvailableErc20AssetsBalanceQuery({
-      address: account.address,
+      address: props.address,
+      chainId: props.chainId,
     });
 
-  const getAvailableAssetsPriceQuery = useGetAvailableAssetsPriceQuery();
+  const getAvailableAssetsPriceQuery = useGetAvailableAssetsPriceQuery({
+    chainId: props.chainId,
+  });
 
   useEffect(() => {
-    if (!account.isConnected) return;
+    if (!props.enabled) return;
 
     getNativeAssetBalanceQuery();
     getAvailableErc20AssetsBalanceQuery();
     getAvailableAssetsPriceQuery();
   }, [
-    account.isConnected,
+    props.enabled,
     getAvailableErc20AssetsBalanceQuery,
     getNativeAssetBalanceQuery,
     getAvailableAssetsPriceQuery,
+    resetAssetsStore,
   ]);
 
   useAccountEffect({

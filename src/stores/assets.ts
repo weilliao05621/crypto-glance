@@ -1,16 +1,26 @@
 import { create } from "zustand";
 import { ValidToken } from "~/constants/tokens";
 
+type Amount = {
+  value: bigint;
+  decimals: bigint;
+};
+
+type AssetValueByUsd = {
+  asset: ValidToken;
+  value: bigint;
+};
+
 interface AssetStore {
-  amounts: Map<ValidToken, bigint>;
+  amounts: Map<ValidToken, Amount>;
   prices: Map<ValidToken, bigint>;
-  updateAmount: (token: ValidToken, amount: bigint) => void;
-  updateAllAmounts: (amounts: Map<ValidToken, bigint>) => void;
+  updateAmount: (token: ValidToken, amount: Amount) => void;
+  updateAllAmounts: (amounts: Array<[ValidToken, Amount]>) => void;
   updatePrice: (token: ValidToken, price: bigint) => void;
   updateAllPrices: (prices: Map<ValidToken, bigint>) => void;
-  getAmount: (token: ValidToken) => bigint;
+  getAmount: (token: ValidToken) => Amount;
   getPrice: (token: ValidToken) => bigint;
-  getAssetsValueByUsd: () => bigint[];
+  getAssetsValueByUsd: () => AssetValueByUsd[];
   reset: () => void;
 }
 
@@ -25,12 +35,15 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
   },
   updateAllAmounts: (amounts) => {
     set((state) => {
-      return { ...state, amounts };
+      amounts.forEach((item) => {
+        state.amounts.set(item[0], item[1]);
+      });
+      return { ...state };
     });
   },
   updatePrice: (token, price) => {
     set((state) => {
-      state.amounts.set(token, price);
+      state.prices.set(token, price);
       return { ...state };
     });
   },
@@ -40,7 +53,7 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
     });
   },
   getAmount: (token) => {
-    return get().amounts.get(token) ?? 0n;
+    return get().amounts.get(token) ?? { value: 0n, decimals: 0n };
   },
   getPrice: (token) => {
     return get().prices.get(token) ?? 0n;
@@ -52,7 +65,12 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
 
     for (const [token, amount] of amounts) {
       const price = prices.get(token) ?? 0n;
-      assetsValueByUsd.push(amount * price);
+      const toDecimals = 10n ** BigInt(amount.decimals);
+
+      assetsValueByUsd.push({
+        asset: token,
+        value: (amount.value * price) / toDecimals,
+      });
     }
 
     return assetsValueByUsd;
