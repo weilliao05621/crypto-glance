@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 
 import { useBalance, useReadContract, useReadContracts } from "wagmi";
 
-import { IERC20_ABI } from "@bgd-labs/aave-address-book";
+import { IAaveOracle_ABI, IERC20_ABI } from "@bgd-labs/aave-address-book";
 
 // stores
 import { useAssetsStore } from "~/stores";
@@ -11,7 +11,12 @@ import { useAssetsStore } from "~/stores";
 import useChainId from "../wagmi/useChainId";
 
 // constants
-import { TOKEN, TOKEN_MAP, type ValidToken } from "~/constants/tokens";
+import {
+  AAVE_TOKENS_PRICES,
+  TOKEN,
+  TOKEN_MAP,
+  type ValidToken,
+} from "~/constants/tokens";
 
 // types
 import type { Address } from "~/types";
@@ -104,5 +109,70 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
         updateAllAmounts(amountsMap);
       }),
     [refetch, updateAllAmounts, tokenList],
+  );
+};
+
+// FIX: currently use ERC-20 for all tokens' price, include BTC & ETH
+export const useGetAssetPriceQuery = (props: {
+  token: ValidToken;
+  tokenAddress: Address;
+}) => {
+  const updatePrice = useAssetsStore((state) => state.updatePrice);
+
+  const chainId = useChainId();
+
+  const oracle = AAVE_TOKENS_PRICES[chainId];
+
+  const { refetch } = useReadContract({
+    address: oracle,
+    abi: IAaveOracle_ABI,
+    functionName: "getAssetPrice",
+    args: [props.tokenAddress],
+    query: {
+      enabled: false,
+    },
+  });
+
+  return useCallback(
+    () =>
+      refetch().then((data) => {
+        const price = data.data;
+        if (!price) return;
+        updatePrice(props.token, price);
+      }),
+    [refetch, updatePrice, props.token],
+  );
+};
+
+export const useGetAvailableAssetsPriceQuery = () => {
+  const updateAllPrices = useAssetsStore((state) => state.updateAllPrices);
+
+  const chainId = useChainId();
+
+  const oracle = AAVE_TOKENS_PRICES[chainId];
+  const tokenList = useMemo(() => Object.values(TOKEN_MAP[chainId]), [chainId]);
+
+  const { refetch } = useReadContract({
+    address: oracle,
+    abi: IAaveOracle_ABI,
+    functionName: "getAssetsPrices",
+    args: [tokenList.map((token) => token.address)],
+    query: {
+      enabled: false,
+    },
+  });
+
+  return useCallback(
+    () =>
+      refetch().then((data) => {
+        const prices = data.data;
+        if (!prices) return;
+        const pricesMap = new Map(
+          prices.map((price, index) => [tokenList[index].symbol, price]),
+        );
+        console.log(pricesMap);
+        updateAllPrices(pricesMap);
+      }),
+    [refetch, tokenList, updateAllPrices],
   );
 };

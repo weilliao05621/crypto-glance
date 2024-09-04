@@ -7,6 +7,7 @@ import { useAssetsStore } from "~/stores";
 
 // queries
 import {
+  useGetAvailableAssetsPriceQuery,
   useGetAvailableErc20AssetsBalanceQuery,
   useGetNativeAssetBalanceQuery,
 } from "../query/assets";
@@ -27,15 +28,19 @@ export const UpdateAssetsOnAccountConnection = () => {
       address: account.address,
     });
 
+  const getAvailableAssetsPriceQuery = useGetAvailableAssetsPriceQuery();
+
   useEffect(() => {
     if (!account.isConnected) return;
 
     getNativeAssetBalanceQuery();
     getAvailableErc20AssetsBalanceQuery();
+    getAvailableAssetsPriceQuery();
   }, [
     account.isConnected,
     getAvailableErc20AssetsBalanceQuery,
     getNativeAssetBalanceQuery,
+    getAvailableAssetsPriceQuery,
   ]);
 
   useAccountEffect({
