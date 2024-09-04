@@ -2,15 +2,16 @@ import { AaveV3Ethereum, AaveV3Sepolia } from "@bgd-labs/aave-address-book";
 
 // constants
 import { ChainId, type ValidChainId } from "../chains/chainId";
-import { TOKEN_NAME, type ValidTokenName } from "./list";
+import { TOKEN, type ValidToken } from "./enum";
 
 // types
 import type { Address } from "~/types";
 
-type TOKEN_INFO_MAP = {
+type TOKEN_LIST_MAP = {
   [C in ValidChainId]: {
-    [T in ValidTokenName]: {
-      symbol: ValidTokenName;
+    [T in ValidToken]: {
+      name: ValidToken;
+      symbol: ValidToken;
       // TODO: will fix icon's typing
       icon: string;
       address: Address;
@@ -18,67 +19,79 @@ type TOKEN_INFO_MAP = {
   };
 };
 
-export const TOKEN_INFO: TOKEN_INFO_MAP = {
+export const TOKEN_MAP: TOKEN_LIST_MAP = {
   [ChainId.ETHEREUM]: {
-    [TOKEN_NAME.AAVE]: {
-      symbol: TOKEN_NAME.AAVE,
+    [TOKEN.AAVE]: {
+      name: TOKEN.AAVE,
+      symbol: TOKEN.AAVE,
       icon: "",
       address: AaveV3Ethereum.ASSETS.AAVE.UNDERLYING as Address,
     },
-    [TOKEN_NAME.USDC]: {
-      symbol: TOKEN_NAME.USDC,
+    [TOKEN.USDC]: {
+      name: TOKEN.USDC,
+      symbol: TOKEN.USDC,
       icon: "",
       address: AaveV3Ethereum.ASSETS.USDC.UNDERLYING as Address,
     },
-    [TOKEN_NAME.USDT]: {
-      symbol: TOKEN_NAME.USDT,
+    [TOKEN.USDT]: {
+      name: TOKEN.USDT,
+      symbol: TOKEN.USDT,
       icon: "",
       address: AaveV3Ethereum.ASSETS.USDT.UNDERLYING as Address as Address,
     },
-    [TOKEN_NAME.DAI]: {
-      symbol: TOKEN_NAME.DAI,
+    [TOKEN.DAI]: {
+      name: TOKEN.DAI,
+      symbol: TOKEN.DAI,
       icon: "",
       address: AaveV3Ethereum.ASSETS.DAI.UNDERLYING as Address,
     },
-    [TOKEN_NAME.WETH]: {
-      symbol: TOKEN_NAME.WETH,
+    [TOKEN.WETH]: {
+      name: TOKEN.WETH,
+      symbol: TOKEN.WETH,
       icon: "",
       address: AaveV3Ethereum.ASSETS.WETH.UNDERLYING as Address,
     },
-    [TOKEN_NAME.WBTC]: {
-      symbol: TOKEN_NAME.WBTC,
+    [TOKEN.WBTC]: {
+      name: TOKEN.WBTC,
+      symbol: TOKEN.WBTC,
       icon: "",
       address: AaveV3Ethereum.ASSETS.WBTC.UNDERLYING as Address,
     },
   },
   [ChainId.SEPOLIA]: {
-    [TOKEN_NAME.AAVE]: {
-      symbol: TOKEN_NAME.AAVE,
+    [TOKEN.AAVE]: {
+      name: TOKEN.AAVE,
+      symbol: TOKEN.AAVE,
       icon: "",
       address: AaveV3Sepolia.ASSETS.AAVE.UNDERLYING as Address,
     },
-    [TOKEN_NAME.USDC]: {
-      symbol: TOKEN_NAME.USDC,
+    [TOKEN.USDC]: {
+      name: TOKEN.USDC,
+      symbol: TOKEN.USDC,
       icon: "",
       address: AaveV3Sepolia.ASSETS.USDC.UNDERLYING as Address,
     },
-    [TOKEN_NAME.USDT]: {
-      symbol: TOKEN_NAME.USDT,
+    [TOKEN.USDT]: {
+      name: TOKEN.USDT,
+      symbol: TOKEN.USDT,
       icon: "",
       address: AaveV3Sepolia.ASSETS.USDT.UNDERLYING as Address,
     },
-    [TOKEN_NAME.DAI]: {
-      symbol: TOKEN_NAME.DAI,
+    [TOKEN.DAI]: {
+      name: TOKEN.DAI,
+      symbol: TOKEN.DAI,
       icon: "",
       address: AaveV3Sepolia.ASSETS.DAI.UNDERLYING as Address,
     },
-    [TOKEN_NAME.WETH]: {
-      symbol: TOKEN_NAME.WETH,
+    [TOKEN.WETH]: {
+      name: TOKEN.WETH,
+      symbol: TOKEN.WETH,
       icon: "",
       address: AaveV3Sepolia.ASSETS.WETH.UNDERLYING as Address,
     },
-    [TOKEN_NAME.WBTC]: {
-      symbol: TOKEN_NAME.WBTC,
+    [TOKEN.WBTC]: {
+      name: TOKEN.WBTC,
+      symbol: TOKEN.WBTC,
       icon: "",
       address: AaveV3Sepolia.ASSETS.WBTC.UNDERLYING as Address,
     },

@@ -1,6 +1,6 @@
 import type { TokenName } from "~/types";
 
-export const TOKEN_NAME = {
+export const TOKEN = {
   ETH: "ETH" as TokenName,
   AAVE: "AAVE" as TokenName,
   LINK: "LINK" as TokenName,
@@ -11,4 +11,6 @@ export const TOKEN_NAME = {
   WBTC: "WBTC" as TokenName,
 } as const;
 
-export type ValidTokenName = (typeof TOKEN_NAME)[keyof typeof TOKEN_NAME];
+type TokenObject = typeof TOKEN;
+
+export type ValidToken = TokenObject[keyof TokenObject];
