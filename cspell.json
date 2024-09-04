@@ -12,6 +12,7 @@
     "AAVE",
     "viem",
     "IERC",
-    "zustand"
+    "zustand",
+    "dbaeumer"
   ]
 }
