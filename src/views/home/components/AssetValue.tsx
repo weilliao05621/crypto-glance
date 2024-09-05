@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { Center, useTheme } from "@chakra-ui/react";
+import { Center, Text, useTheme } from "@chakra-ui/react";
 import { ResponsiveContainer, PieChart, Pie, Sector } from "recharts";
 
 // hooks
@@ -40,24 +40,33 @@ const AssetValue = () => {
     );
   }, [totalValues, total]);
 
+  const isEmpty = useMemo(() => {
+    return data.every((d) => d.value === 0);
+  }, [data]);
+
   return (
-    <Center w="100%" h="300px">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart width={400} height={400}>
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill={chartFill}
-            onMouseEnter={(_, i) => setActiveIndex(i)}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+    <Center w="100%" h="100%">
+      {isEmpty ? (
+        <Text>No matched assets</Text>
+      ) : (
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              activeIndex={activeIndex}
+              activeShape={renderActiveShape}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              fill={chartFill}
+              onMouseLeave={() => setActiveIndex(0)}
+              onMouseEnter={(_, i) => setActiveIndex(i)}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      )}
     </Center>
   );
 };

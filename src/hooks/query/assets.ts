@@ -22,11 +22,15 @@ const ETHEREUM_DECIMALS = 18n;
 const AAVE_USD_DECIMALS = 8n;
 const TO_AAVE_USD_DECIMALS = 10n ** AAVE_USD_DECIMALS;
 
-export const useGetNativeAssetBalanceQuery = (props: { address: Address }) => {
+export const useGetNativeAssetBalanceQuery = (props: {
+  address: Address;
+  chainId: ChainId;
+}) => {
   const updateAmount = useAssetsStore((state) => state.updateAmount);
 
   const { refetch } = useBalance({
     address: props.address,
+    chainId: props.chainId,
     query: {
       enabled: false,
       // FIX: workaround for source code bug (bigint can't be serializable)
@@ -38,10 +42,14 @@ export const useGetNativeAssetBalanceQuery = (props: { address: Address }) => {
     () =>
       refetch().then((data) => {
         const amount = data.data?.value;
-        if (!amount) return;
-        updateAmount(TOKEN.ETH, { value: amount, decimals: ETHEREUM_DECIMALS });
+        if (amount === undefined) return;
+
+        updateAmount(TOKEN_MAP[props.chainId][TOKEN.ETH].symbol, {
+          value: amount,
+          decimals: ETHEREUM_DECIMALS,
+        });
       }),
-    [refetch, updateAmount],
+    [props.chainId, refetch, updateAmount],
   );
 };
 
@@ -67,7 +75,7 @@ export const useGetErc20AssetBalanceQuery = (props: {
     () =>
       refetch().then((data) => {
         const value = data.data;
-        if (!value) return;
+        if (value === undefined) return;
 
         updateAmount(props.token, {
           value,
@@ -77,6 +85,10 @@ export const useGetErc20AssetBalanceQuery = (props: {
     [refetch, updateAmount, props.chainId, props.token],
   );
 };
+
+type GetAvailableErc20AssetsBalanceQueryData = Array<{
+  result: bigint | undefined;
+}>;
 
 // treat all tokens as ERC-20
 export const useGetAvailableErc20AssetsBalanceQuery = (props: {
@@ -91,7 +103,12 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
     [props.chainId],
   );
 
-  const { refetch } = useReadContracts({
+  const { refetch } = useReadContracts<
+    GetAvailableErc20AssetsBalanceQueryData,
+    never,
+    never,
+    GetAvailableErc20AssetsBalanceQueryData
+  >({
     contracts: tokenList.map((token) => {
       return {
         address: token.address!,
@@ -109,13 +126,13 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
     () =>
       refetch().then((data) => {
         const results = data.data;
-        if (!results) return;
+        if (!Array.isArray(results)) return;
 
         const forMapping: [ValidToken, { value: bigint; decimals: bigint }][] =
           tokenList.map((token, index) => [
             token.symbol,
             {
-              value: (results[index].result ?? 0n) as bigint,
+              value: results[index].result ?? 0n,
               decimals: BigInt(TOKEN_MAP[props.chainId][token.symbol].decimals),
             },
           ]);
@@ -152,7 +169,7 @@ export const useGetAvailableAssetsPriceQuery = (props: {
     () =>
       refetch().then((data) => {
         const prices = data.data;
-        if (!prices) return;
+        if (!Array.isArray(prices)) return;
 
         const pricesMap = new Map(
           tokenList.map((token, index) => [

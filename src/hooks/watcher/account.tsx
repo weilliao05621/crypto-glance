@@ -24,6 +24,7 @@ export const UpdateAssetsOnAccountConnection = (props: {
 
   const getNativeAssetBalanceQuery = useGetNativeAssetBalanceQuery({
     address: props.address,
+    chainId: props.chainId,
   });
 
   const getAvailableErc20AssetsBalanceQuery =
