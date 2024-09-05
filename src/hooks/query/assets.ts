@@ -86,14 +86,15 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
   const updateAllAmounts = useAssetsStore((state) => state.updateAllAmounts);
 
   const tokenList = useMemo(
-    () => Object.values(TOKEN_MAP[props.chainId]),
+    () =>
+      Object.values(TOKEN_MAP[props.chainId]).filter((item) => !!item.address),
     [props.chainId],
   );
 
   const { refetch } = useReadContracts({
     contracts: tokenList.map((token) => {
       return {
-        address: token.address,
+        address: token.address!,
         abi: IERC20_ABI,
         functionName: "balanceOf",
         args: [props.address],
@@ -132,7 +133,8 @@ export const useGetAvailableAssetsPriceQuery = (props: {
 
   const oracle = AAVE_TOKENS_PRICES[props.chainId];
   const tokenList = useMemo(
-    () => Object.values(TOKEN_MAP[props.chainId]),
+    () =>
+      Object.values(TOKEN_MAP[props.chainId]).filter((item) => !!item.address),
     [props.chainId],
   );
 
@@ -140,7 +142,7 @@ export const useGetAvailableAssetsPriceQuery = (props: {
     address: oracle,
     abi: IAaveOracle_ABI,
     functionName: "getAssetsPrices",
-    args: [tokenList.map((token) => token.address)],
+    args: [tokenList.map((token) => token.address!)],
     query: {
       enabled: false,
     },

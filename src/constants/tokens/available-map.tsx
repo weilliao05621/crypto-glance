@@ -23,13 +23,14 @@ type TOKEN_LIST_MAP = {
       name: string;
       symbol: ValidToken;
       icon: ComponentType<SVGProps<SVGSVGElement>>;
-      address: Address;
+      address?: Address;
       decimals: number;
     };
   };
 };
 
 const TOKEN_NAME_MAP = {
+  [TOKEN.ETH]: "Ether",
   [TOKEN.AAVE]: "Aave",
   [TOKEN.USDC]: "USD Coin",
   [TOKEN.USDT]: "Tether",
@@ -39,6 +40,7 @@ const TOKEN_NAME_MAP = {
 } as const;
 
 const TOKEN_ICON_MAP = {
+  [TOKEN.ETH]: EthereumIcon,
   [TOKEN.AAVE]: AaveIcon,
   [TOKEN.USDC]: UsdcIcon,
   [TOKEN.USDT]: UsdtIcon,
@@ -49,6 +51,12 @@ const TOKEN_ICON_MAP = {
 
 export const TOKEN_MAP: TOKEN_LIST_MAP = {
   [ChainId.ETHEREUM]: {
+    [TOKEN.ETH]: {
+      name: TOKEN_NAME_MAP[TOKEN.ETH],
+      symbol: TOKEN.ETH,
+      icon: TOKEN_ICON_MAP[TOKEN.ETH],
+      decimals: 18,
+    },
     [TOKEN.AAVE]: {
       name: TOKEN_NAME_MAP[TOKEN.AAVE],
       symbol: TOKEN.AAVE,
@@ -93,6 +101,12 @@ export const TOKEN_MAP: TOKEN_LIST_MAP = {
     },
   },
   [ChainId.SEPOLIA]: {
+    [TOKEN.ETH]: {
+      name: TOKEN_NAME_MAP[TOKEN.ETH],
+      symbol: TOKEN.ETH,
+      icon: TOKEN_ICON_MAP[TOKEN.ETH],
+      decimals: 18,
+    },
     [TOKEN.AAVE]: {
       name: TOKEN_NAME_MAP[TOKEN.AAVE],
       symbol: TOKEN.AAVE,

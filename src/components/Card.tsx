@@ -8,11 +8,12 @@ interface CardProps {
   children: ReactNode;
   title?: string;
   subtitle?: string;
+  height?: string;
 }
 
 const Card = (props: CardProps) => {
   return (
-    <CardUI w="100%" p={6}>
+    <CardUI w="100%" p={6} h={props.height}>
       {props.title && <Title>{props.title}</Title>}
       {props.subtitle && <Description>{props.subtitle}</Description>}
       <Box h={6} />
