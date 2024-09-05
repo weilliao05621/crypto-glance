@@ -13,6 +13,7 @@
     "viem",
     "IERC",
     "zustand",
-    "dbaeumer"
+    "dbaeumer",
+    "svgr"
   ]
 }
