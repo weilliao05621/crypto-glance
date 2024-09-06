@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { formatEther, Hash, isAddress, parseEther, type Address } from "viem";
 import {
+  useAccount,
   useSendTransaction,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -43,6 +44,7 @@ import useChainId from "~/hooks/wagmi/useChainId";
 
 // constants
 import { TOKEN, TOKEN_MAP, type ValidToken } from "~/constants/tokens";
+import { useGetAssetBalanceQuery } from "~/hooks/query/assets";
 
 const TOKEN_LIST = Object.values(TOKEN);
 
@@ -76,6 +78,7 @@ type SentTx = {
 };
 
 const AssetList = () => {
+  const account = useAccount();
   const chainId = useChainId();
 
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -99,6 +102,12 @@ const AssetList = () => {
       enabled: hasSendingTx,
     },
     pollingInterval: hasSendingTx ? 5_000 : undefined,
+  });
+
+  const queryAssetBalance = useGetAssetBalanceQuery({
+    address: account.address,
+    chainId,
+    token: activeToken?.token,
   });
 
   const iconFill = useTheme().colors.gray[500];
@@ -127,16 +136,20 @@ const AssetList = () => {
     const to = txReceipt?.to;
     const amount = tx?.value;
 
-    onClose();
-    toast.success({
-      title: `Complete transaction!${type}`,
-      description: `Check the tx hash at ${hash}. Sent ${amount} ${token} to ${to}$`,
-      isClosable: true,
-      duration: 5_000,
-    });
-    setTx(null);
-    setActiveToken(null);
+    (async () => {
+      await queryAssetBalance(tx.token);
+      onClose();
+      toast.success({
+        title: `Complete transaction!${type}`,
+        description: `Check the tx hash at ${hash}. Sent ${amount} ${token} to ${to}$`,
+        isClosable: true,
+        duration: 5_000,
+      });
+      setTx(null);
+      setActiveToken(null);
+    })();
   }, [
+    queryAssetBalance,
     txReceipt?.type,
     txReceipt?.transactionHash,
     tx?.value,
@@ -275,11 +288,15 @@ const AssetList = () => {
 export default AssetList;
 
 const AssetAmount = (props: { token: ValidToken }) => {
-  const amount = useAssetsStore((state) => state.getAmount(props.token));
+  const amount = useAssetsStore((state) => state.getAmount(props.token).value);
+  const decimals = useAssetsStore(
+    (state) => state.getAmount(props.token).decimals,
+  );
 
-  const toDecimals = 10n ** BigInt(amount.decimals);
-  const value = amount.value / toDecimals;
-  const valueString = `${value.toString()} ${props.token}`;
+  const toDecimals = 10n ** BigInt(decimals);
+  const value = (amount * 100n) / toDecimals;
+
+  const valueString = `${(parseFloat(value.toString()) / 100).toFixed(2)} ${props.token}`;
 
   return <span>{valueString}</span>;
 };

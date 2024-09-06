@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 import { useBalance, useReadContract, useReadContracts } from "wagmi";
+import { type Address } from "viem";
 
 import { IAaveOracle_ABI, IERC20_ABI } from "@bgd-labs/aave-address-book";
 
@@ -10,26 +11,27 @@ import { useAssetsStore } from "~/stores";
 // constants
 import {
   AAVE_TOKENS_PRICES,
+  AVAILABLE_NATIVE_TOKEN,
   TOKEN,
   TOKEN_MAP,
   type ValidToken,
 } from "~/constants/tokens";
 
 // types
-import type { Address, ChainId } from "~/types";
+import type { ChainId } from "~/types";
 
 const ETHEREUM_DECIMALS = 18n;
 const AAVE_USD_DECIMALS = 8n;
 const TO_AAVE_USD_DECIMALS = 10n ** AAVE_USD_DECIMALS;
 
 export const useGetNativeAssetBalanceQuery = (props: {
-  address: Address;
+  address?: Address;
   chainId: ChainId;
 }) => {
   const updateAmount = useAssetsStore((state) => state.updateAmount);
 
   const { refetch } = useBalance({
-    address: props.address,
+    address: props?.address,
     chainId: props.chainId,
     query: {
       enabled: false,
@@ -54,18 +56,19 @@ export const useGetNativeAssetBalanceQuery = (props: {
 };
 
 export const useGetErc20AssetBalanceQuery = (props: {
-  address: Address;
+  address?: Address;
   chainId: ChainId;
-  token: ValidToken;
-  tokenAddress: Address;
+  token?: ValidToken;
 }) => {
   const updateAmount = useAssetsStore((state) => state.updateAmount);
 
   const { refetch } = useReadContract({
-    address: props.tokenAddress,
+    address: props.token
+      ? TOKEN_MAP[props.chainId][props.token].address
+      : undefined,
     abi: IERC20_ABI,
     functionName: "balanceOf",
-    args: [props.address],
+    args: props?.address ? [props.address] : undefined,
     query: {
       enabled: false,
     },
@@ -74,6 +77,7 @@ export const useGetErc20AssetBalanceQuery = (props: {
   return useCallback(
     () =>
       refetch().then((data) => {
+        if (!props.token) return;
         const value = data.data;
         if (value === undefined) return;
 
@@ -82,7 +86,40 @@ export const useGetErc20AssetBalanceQuery = (props: {
           decimals: BigInt(TOKEN_MAP[props.chainId][props.token].decimals),
         });
       }),
-    [refetch, updateAmount, props.chainId, props.token],
+    [refetch, updateAmount, props.token, props.chainId],
+  );
+};
+
+export const useGetAssetBalanceQuery = (props: {
+  address?: Address;
+  chainId: ChainId;
+  token?: ValidToken;
+}) => {
+  const queryNativeBalance = useGetNativeAssetBalanceQuery({
+    address: props.address,
+    chainId: props.chainId,
+  });
+  const queryErc20Balance = useGetErc20AssetBalanceQuery({
+    address: props.address,
+    chainId: props.chainId,
+    token: props.token,
+  });
+
+  return useCallback(
+    async (type: ValidToken) => {
+      const native = AVAILABLE_NATIVE_TOKEN[props.chainId];
+      switch (type) {
+        case native: {
+          await queryNativeBalance();
+          break;
+        }
+
+        default:
+          await queryErc20Balance();
+          break;
+      }
+    },
+    [queryNativeBalance, queryErc20Balance, props.chainId],
   );
 };
 

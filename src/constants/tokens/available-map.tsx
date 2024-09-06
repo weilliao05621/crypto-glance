@@ -149,3 +149,10 @@ export const TOKEN_MAP: TOKEN_LIST_MAP = {
     },
   },
 } as const;
+
+export const AVAILABLE_NATIVE_TOKEN: {
+  [C in ValidChainId]: Pick<typeof TOKEN, "ETH">["ETH"];
+} = {
+  [ChainId.ETHEREUM]: TOKEN.ETH,
+  [ChainId.SEPOLIA]: TOKEN.ETH,
+} as const;
