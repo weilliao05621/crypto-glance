@@ -1,13 +1,11 @@
 import { type ComponentType, type SVGProps } from "react";
 
 import { AaveV3Ethereum, AaveV3Sepolia } from "@bgd-labs/aave-address-book";
+import { type Address } from "viem";
 
 // constants
 import { ChainId, type ValidChainId } from "../chains/chainId";
 import { TOKEN, type ValidToken } from "./enum";
-
-// types
-import type { Address } from "~/types";
 
 // images
 import AaveIcon from "~/assets/icons/tokens/aave-mono.svg?react";
