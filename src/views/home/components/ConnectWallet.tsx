@@ -1,14 +1,13 @@
-import { createWeb3Modal } from "@web3modal/wagmi/react";
+import { useLayoutEffect } from "react";
 
-// hooks
 import { useAccount } from "wagmi";
+import { createWeb3Modal } from "@web3modal/wagmi/react";
 
 // configs
 import { wagmiConfig } from "~/configs/wagmi";
-import { Center } from "@chakra-ui/react";
+import { Box, Center, useColorMode } from "@chakra-ui/react";
 
-// TODO: change theme mode with useToggleTheme
-createWeb3Modal({
+const modal = createWeb3Modal({
   projectId: "123",
   wagmiConfig,
   enableAnalytics: false,
@@ -18,12 +17,18 @@ createWeb3Modal({
 
 const ConnectWallet = () => {
   const account = useAccount();
+  const { colorMode } = useColorMode();
+
+  useLayoutEffect(() => {
+    modal.setThemeMode(colorMode);
+  }, [colorMode]);
 
   return (
     <Center>
       {account.isConnected ? (
         <>
           <w3m-network-button />
+          <Box marginRight={2} />
           <w3m-account-button />
         </>
       ) : (

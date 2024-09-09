@@ -73,7 +73,7 @@ export const TOKEN_MAP: TOKEN_LIST_MAP = {
       name: TOKEN_NAME_MAP[TOKEN.USDT],
       symbol: TOKEN.USDT,
       icon: TOKEN_ICON_MAP[TOKEN.USDT],
-      address: AaveV3Ethereum.ASSETS.USDT.UNDERLYING as Address as Address,
+      address: AaveV3Ethereum.ASSETS.USDT.UNDERLYING as Address,
       decimals: AaveV3Ethereum.ASSETS.USDT.decimals,
     },
     [TOKEN.DAI]: {
