@@ -1,10 +1,14 @@
 import { useSendTransaction, useWriteContract } from "wagmi";
-import { isAddress, parseEther, type Address } from "viem";
+import { isAddress, type Address } from "viem";
 
-import { type ValidToken } from "~/constants/tokens";
 import { IERC20_ABI } from "@bgd-labs/aave-address-book";
+
+// hooks
 import useEventCallback from "~/hooks/useEventCallback";
-import { PendingTx } from "../types";
+
+// types
+import { type ValidToken } from "~/constants/tokens";
+import type { PendingTx } from "../types";
 
 interface SendTxProps {
   token?: ValidToken;
@@ -18,6 +22,7 @@ interface SendTxProps {
 type SendTxReturnFn = (
   to: UnValidatedAddress,
   amount: string,
+  decimals: number,
 ) => Promise<string | void>;
 
 type UnValidatedAddress = string;
@@ -26,13 +31,16 @@ const useSendTx = (props: SendTxProps): SendTxReturnFn => {
   const { sendTransactionAsync } = useSendTransaction();
   const { writeContractAsync } = useWriteContract();
 
-  const makeTransfer = async (
-    to: Address,
-    amount: string,
-    address?: Address,
-  ) => {
+  const makeTransfer = async (props: {
+    to: Address;
+    amount: string;
+    address?: Address;
+    decimals: number;
+  }) => {
+    const address = props.address;
     const isNative = !address;
-    const value = parseEther(amount);
+    const value = BigInt(`${+props.amount * Math.pow(10, props.decimals)}`);
+    const to = props.to;
 
     switch (isNative) {
       case true: {
@@ -56,7 +64,11 @@ const useSendTx = (props: SendTxProps): SendTxReturnFn => {
     }
   };
 
-  const transferToken = async (to: UnValidatedAddress, amount: string) => {
+  const transferToken = async (
+    to: UnValidatedAddress,
+    amount: string,
+    decimals: number,
+  ) => {
     if (!isAddress(to)) return "Invalid address";
     const errorMsg = validateTransferAmount(amount);
     if (errorMsg) return errorMsg;
@@ -65,7 +77,12 @@ const useSendTx = (props: SendTxProps): SendTxReturnFn => {
       async () => {
         if (!props.token) return null;
 
-        const hash = await makeTransfer(to, amount, props.address);
+        const hash = await makeTransfer({
+          to,
+          amount,
+          address: props.address,
+          decimals,
+        });
         if (!hash) return null;
         const pendingTx = {
           hash,

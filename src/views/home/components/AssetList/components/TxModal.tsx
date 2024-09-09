@@ -92,10 +92,14 @@ const TxModal = (props: TxModalProps) => {
             flex={1}
             onClick={async () => {
               const to = receiverInputRef.current?.value ?? "";
-              const amount = amountInputRef.current?.value ?? "";
+              const amount = amountInputRef.current?.value ?? "0";
 
               setIsLoading(true);
-              const errorMsg = await props.sendTxHandler(to, amount);
+              const errorMsg = await props.sendTxHandler(
+                to,
+                amount,
+                props.selectedToken.decimals,
+              );
               if (errorMsg) {
                 setErrorMsg(errorMsg);
               }
