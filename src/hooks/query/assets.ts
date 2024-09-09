@@ -36,7 +36,6 @@ export const useGetNativeAssetBalanceQuery = (props: {
   const query = useBalance({
     address: props?.address,
     chainId: +props.chainId.toString(),
-    blockTag: "latest",
     query: {
       enabled: false,
     },
@@ -120,6 +119,7 @@ export const useGetAssetBalanceQuery = (props: {
   return useCallback(
     async (type: ValidToken) => {
       const native = AVAILABLE_NATIVE_TOKEN[props.chainId];
+      console.log("fetching target: ", type);
       switch (type) {
         case native: {
           await queryNativeBalance.refetch();
@@ -127,7 +127,6 @@ export const useGetAssetBalanceQuery = (props: {
         }
 
         default:
-          console.log("refetching erc20", type);
           await queryErc20Balance();
           break;
       }

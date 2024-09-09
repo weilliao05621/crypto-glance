@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import { useTransactionReceipt } from "wagmi";
 import { type Address } from "viem";
@@ -47,6 +47,7 @@ const TxSuccessWatcher = (props: TxSuccessWatcherProps) => {
     if (retryCount < RETRY_TIMES) {
       selfControlPollingInterval.current = setTimeout(() => {
         refetch();
+        console.log("refetching tx receipt for:", props.pendingTx?.hash);
         setRetryCount((prev) => prev + 1);
       }, POLL_TX_RECEIPT_INTERVAL);
       return;
@@ -75,4 +76,6 @@ const TxSuccessWatcher = (props: TxSuccessWatcherProps) => {
   return null;
 };
 
-export default TxSuccessWatcher;
+const MemoTxSuccessWatcher = memo(TxSuccessWatcher);
+
+export default MemoTxSuccessWatcher;

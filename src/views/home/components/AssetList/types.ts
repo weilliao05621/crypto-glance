@@ -10,9 +10,10 @@ export type SelectedToken = {
 
 export type PendingTx = {
   hash: Hash;
-  amount: string;
   token: ValidToken;
-  to: Address;
+  amount: string;
+  to?: Address;
+  tokenAddress?: Address;
 };
 
 export type SuccessTxReceipt = PendingTx & { type?: string };

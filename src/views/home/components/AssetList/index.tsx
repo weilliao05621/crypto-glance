@@ -16,7 +16,7 @@ import useSendTxToast from "./hooks/useSendTxToast";
 // components
 import MemoAssetTable from "./components/AssetTable";
 import MemoTxModal from "./components/TxModal";
-import TxSuccessWatcher from "./components/TxSuccessWatcher";
+import MemoTxSuccessWatcher from "./components/TxSuccessWatcher";
 
 // constants
 import { TOKEN_MAP } from "~/constants/tokens";
@@ -25,7 +25,7 @@ import { TOKEN_MAP } from "~/constants/tokens";
 import type { PendingTx, SelectedToken, SuccessTxReceipt } from "./types";
 
 type SelectedTokenState = SelectedToken | null;
-type PendingTxState = PendingTx | null;
+type PendingTxState = PendingTx;
 
 const AssetList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,7 +33,7 @@ const AssetList = () => {
   const chainId = useChainId();
 
   const [selectedToken, setSelectedToken] = useState<SelectedTokenState>(null);
-  const [pendingTx, setPendingTx] = useState<PendingTxState>(null);
+  const [pendingTxs, setPendingTxs] = useState<Array<PendingTxState>>([]);
 
   const toast = useSendTxToast();
 
@@ -65,11 +65,20 @@ const AssetList = () => {
       try {
         const newPendingTx = await cb();
         if (!newPendingTx) return;
-        setPendingTx(newPendingTx);
-        toast.set("loading", {
+
+        setPendingTxs((prev) => [
+          ...prev,
+          { ...newPendingTx, tokenAddress: selectedToken?.address },
+        ]);
+
+        toast.set("success", {
           title: "Sent transaction",
-          description: "Await for tx be included in the new block",
+          description:
+            "Await for tx be included in the new block" +
+            ` (TxHash: ${newPendingTx.hash})`,
         });
+
+        onClose();
       } catch (e) {
         console.log(e);
         toast.set("error", {
@@ -84,21 +93,19 @@ const AssetList = () => {
 
   const onReceivedTxReceipt = useEventCallback(
     (txReceipt: SuccessTxReceipt) => {
-      const type = txReceipt.type ? ` (${txReceipt?.type.toUpperCase()})` : "";
       const hash = txReceipt.hash;
-      const to = txReceipt.to;
-      const amount = txReceipt.amount;
       const token = txReceipt.token;
+      const amount = txReceipt.amount;
+      const to = txReceipt.to ? ` ${txReceipt.to}` : "";
 
       (async () => {
         toast.set("success", {
-          title: `Complete transaction!${type}`,
-          description: `Check the tx hash at ${hash}. Sent ${amount} ${token} to${to}$`,
+          title: `Complete transaction!`,
+          description: `Check the tx hash at ${hash}. (Sent ${amount} ${token}${to})`,
           duration: 7_000,
         });
         await queryAssetBalance(token);
-        onClose();
-        setPendingTx(null);
+        setPendingTxs((prev) => prev.filter((tx) => tx?.hash !== hash));
       })();
     },
   );
@@ -106,11 +113,16 @@ const AssetList = () => {
   return (
     <>
       <MemoAssetTable tokenList={tokens} onSelectedToken={onSelectedToken} />
-      <TxSuccessWatcher
-        assetAddress={selectedToken?.address}
-        pendingTx={pendingTx}
-        onReceiptReceived={onReceivedTxReceipt}
-      />
+      {pendingTxs.map((tx) => {
+        return (
+          <MemoTxSuccessWatcher
+            key={tx.hash}
+            assetAddress={tx.tokenAddress}
+            pendingTx={tx}
+            onReceiptReceived={onReceivedTxReceipt}
+          />
+        );
+      })}
       {selectedToken && (
         <MemoTxModal
           isOpen={isOpen}
