@@ -6,6 +6,9 @@ import { type Address } from "viem";
 // hooks
 import useEventCallback from "~/hooks/useEventCallback";
 
+// utils
+import { devLog } from "~/utils/logger";
+
 // types
 import type { PendingTx, SuccessTxReceipt } from "../types";
 
@@ -47,7 +50,7 @@ const TxSuccessWatcher = (props: TxSuccessWatcherProps) => {
     if (retryCount < RETRY_TIMES) {
       selfControlPollingInterval.current = setTimeout(() => {
         refetch();
-        console.log("refetching tx receipt for:", props.pendingTx?.hash);
+        devLog("refetching tx receipt for:", props.pendingTx?.hash);
         setRetryCount((prev) => prev + 1);
       }, POLL_TX_RECEIPT_INTERVAL);
       return;
