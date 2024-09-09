@@ -1,7 +1,7 @@
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 
 // hooks
-import { useAccount } from "~/hooks/wagmi/useAccount";
+import { useAccount } from "wagmi";
 
 // configs
 import { wagmiConfig } from "~/configs/wagmi";
