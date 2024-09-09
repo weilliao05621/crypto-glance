@@ -3,6 +3,17 @@
   "language": "en",
   "useGitignore": true,
   "allowCompoundWords": true,
-  "ignorePaths": ["node_modules", "public"],
-  "words": ["pelith", "commitlint"]
+  "ignorePaths": ["node_modules", "public", "pnpm-lock.yaml"],
+  "words": [
+    "pelith",
+    "commitlint",
+    "wagmi",
+    "sepolia",
+    "AAVE",
+    "viem",
+    "IERC",
+    "zustand",
+    "dbaeumer",
+    "svgr"
+  ]
 }

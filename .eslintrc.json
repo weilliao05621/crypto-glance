@@ -8,7 +8,7 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["react-refresh", "prettier", "import-helpers"],
+  "plugins": ["react-refresh", "prettier"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -19,20 +19,6 @@
     "react-refresh/only-export-components": [
       "warn",
       { "allowConstantExport": true }
-    ],
-    "import-helpers/order-imports": [
-      "warn",
-      {
-        "newlinesBetween": "always",
-        "groups": [
-          "/^react/",
-          "/^wagmi/",
-          "module",
-          "/^(~/)/",
-          ["parent", "sibling", "index"]
-        ],
-        "alphabetize": { "order": "asc", "ignoreCase": true }
-      }
     ]
   }
 }
