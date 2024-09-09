@@ -11,6 +11,9 @@ import { useAssetsStore } from "~/stores";
 // hooks
 import useEventData from "../useEventData";
 
+// utils
+import { devLog } from "~/utils/logger";
+
 // constants
 import {
   AAVE_TOKENS_PRICES,
@@ -119,7 +122,7 @@ export const useGetAssetBalanceQuery = (props: {
   return useCallback(
     async (type: ValidToken) => {
       const native = AVAILABLE_NATIVE_TOKEN[props.chainId];
-      console.log("fetching target: ", type);
+      devLog("fetching target: ", type);
       switch (type) {
         case native: {
           await queryNativeBalance.refetch();

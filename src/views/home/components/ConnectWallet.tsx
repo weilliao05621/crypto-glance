@@ -4,11 +4,11 @@ import { useAccount } from "wagmi";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 
 // configs
-import { wagmiConfig } from "~/configs/wagmi";
+import { wagmiConfig, wallectConnectProjectId } from "~/configs/wagmi";
 import { Box, Center, useColorMode } from "@chakra-ui/react";
 
 const modal = createWeb3Modal({
-  projectId: "123",
+  projectId: wallectConnectProjectId,
   wagmiConfig,
   enableAnalytics: false,
   enableOnramp: false,
