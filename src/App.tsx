@@ -11,9 +11,6 @@ import { queryClientConfig } from "./configs/tanstack-query";
 import { wagmiConfig } from "./configs/wagmi";
 import theme from "./configs/theme";
 
-// watchers
-import { UpdateAssetsOnAccountConnection } from "./hooks/watcher/account";
-
 const queryClient = new QueryClient({
   defaultOptions: queryClientConfig,
 });
@@ -24,7 +21,6 @@ function App() {
       <WagmiProvider config={wagmiConfig}>
         <ChakraProvider theme={theme}>
           <HomePage />
-          <Watchers />
         </ChakraProvider>
       </WagmiProvider>
     </QueryClientProvider>
@@ -32,11 +28,3 @@ function App() {
 }
 
 export default App;
-
-const Watchers = () => {
-  return (
-    <>
-      <UpdateAssetsOnAccountConnection />
-    </>
-  );
-};

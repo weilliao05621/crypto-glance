@@ -8,6 +8,9 @@ import { IAaveOracle_ABI, IERC20_ABI } from "@bgd-labs/aave-address-book";
 // stores
 import { useAssetsStore } from "~/stores";
 
+// hooks
+import useEventData from "../useEventData";
+
 // constants
 import {
   AAVE_TOKENS_PRICES,
@@ -30,19 +33,21 @@ export const useGetNativeAssetBalanceQuery = (props: {
 }) => {
   const updateAmount = useAssetsStore((state) => state.updateAmount);
 
-  const { refetch } = useBalance({
+  const query = useBalance({
     address: props?.address,
-    chainId: props.chainId,
+    chainId: +props.chainId.toString(),
+    blockTag: "latest",
     query: {
       enabled: false,
-      // FIX: workaround for source code bug (bigint can't be serializable)
-      structuralSharing: false,
     },
   });
 
-  return useCallback(
+  // hack: wagmi will generate new reference on every call
+  const memoQuery = useEventData(query);
+
+  const refetch = useCallback(
     () =>
-      refetch().then((data) => {
+      memoQuery.refetch().then((data) => {
         const amount = data.data?.value;
         if (amount === undefined) return;
 
@@ -51,8 +56,15 @@ export const useGetNativeAssetBalanceQuery = (props: {
           decimals: ETHEREUM_DECIMALS,
         });
       }),
-    [props.chainId, refetch, updateAmount],
+    [memoQuery, props.chainId, updateAmount],
   );
+
+  return useMemo(() => {
+    return {
+      ...memoQuery,
+      refetch,
+    };
+  }, [memoQuery, refetch]);
 };
 
 export const useGetErc20AssetBalanceQuery = (props: {
@@ -110,11 +122,12 @@ export const useGetAssetBalanceQuery = (props: {
       const native = AVAILABLE_NATIVE_TOKEN[props.chainId];
       switch (type) {
         case native: {
-          await queryNativeBalance();
+          await queryNativeBalance.refetch();
           break;
         }
 
         default:
+          console.log("refetching erc20", type);
           await queryErc20Balance();
           break;
       }
@@ -140,7 +153,7 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
     [props.chainId],
   );
 
-  const { refetch } = useReadContracts<
+  const query = useReadContracts<
     GetAvailableErc20AssetsBalanceQueryData,
     never,
     never,
@@ -159,9 +172,12 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
     },
   });
 
-  return useCallback(
+  // hack: wagmi will generate new reference on every call
+  const memoQuery = useEventData(query);
+
+  const refetch = useCallback(
     () =>
-      refetch().then((data) => {
+      memoQuery.refetch().then((data) => {
         const results = data.data;
         if (!Array.isArray(results)) return;
 
@@ -173,10 +189,17 @@ export const useGetAvailableErc20AssetsBalanceQuery = (props: {
               decimals: BigInt(TOKEN_MAP[props.chainId][token.symbol].decimals),
             },
           ]);
-
         updateAllAmounts(forMapping);
       }),
-    [refetch, updateAllAmounts, props.chainId, tokenList],
+    [memoQuery, updateAllAmounts, props.chainId, tokenList],
+  );
+
+  return useMemo(
+    () => ({
+      ...memoQuery,
+      refetch,
+    }),
+    [memoQuery, refetch],
   );
 };
 
@@ -192,7 +215,7 @@ export const useGetAvailableAssetsPriceQuery = (props: {
     [props.chainId],
   );
 
-  const { refetch } = useReadContract({
+  const query = useReadContract({
     address: oracle,
     abi: IAaveOracle_ABI,
     functionName: "getAssetsPrices",
@@ -202,9 +225,12 @@ export const useGetAvailableAssetsPriceQuery = (props: {
     },
   });
 
-  return useCallback(
+  // hack: wagmi will generate new reference on every call
+  const memoQuery = useEventData(query);
+
+  const refetch = useCallback(
     () =>
-      refetch().then((data) => {
+      memoQuery.refetch().then((data) => {
         const prices = data.data;
         if (!Array.isArray(prices)) return;
 
@@ -220,6 +246,14 @@ export const useGetAvailableAssetsPriceQuery = (props: {
 
         updateAllPrices(pricesMap);
       }),
-    [refetch, tokenList, updateAllPrices],
+    [memoQuery, tokenList, updateAllPrices],
+  );
+
+  return useMemo(
+    () => ({
+      ...memoQuery,
+      refetch,
+    }),
+    [memoQuery, refetch],
   );
 };
