@@ -18,6 +18,9 @@ import MemoAssetTable from "./components/AssetTable";
 import MemoTxModal from "./components/TxModal";
 import MemoTxSuccessWatcher from "./components/TxSuccessWatcher";
 
+// utils
+import { devErrorLog } from "~/utils/logger";
+
 // constants
 import { TOKEN_MAP } from "~/constants/tokens";
 
@@ -80,7 +83,7 @@ const AssetList = () => {
 
         onClose();
       } catch (e) {
-        console.log(e);
+        devErrorLog(e);
         toast.set("error", {
           title: "Transaction failed",
           description:

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef } from "react";
 import { useToast, type UseToastOptions } from "@chakra-ui/react";
 
 // utils
-import { logging } from "~/utils/logger";
+import { devLog } from "~/utils/logger";
 
 type ToastInfo = {
   title: string;
@@ -26,7 +26,7 @@ const useSendTxToast = () => {
     (toastContent: UseToastOptions, id: ReturnType<typeof toast>) => {
       const hasToast = !!toastRef.current.get(id);
 
-      logging("will set id: ", hasToast, id);
+      devLog("will set id: ", hasToast, id);
 
       if (hasToast) {
         toast.update(id, toastContent);
@@ -49,7 +49,7 @@ const useSendTxToast = () => {
           position: "top-right",
         });
 
-        logging("toast id(init):", id);
+        devLog("toast id(init):", id);
 
         toast.update(id, {
           duration: info.duration ?? 20_000,
@@ -64,7 +64,7 @@ const useSendTxToast = () => {
         toastRef.current?.set(id, true);
       },
       set: (status, info) => {
-        logging("toast id(set):", id);
+        devLog("toast id(set):", id);
 
         const content = {
           status,

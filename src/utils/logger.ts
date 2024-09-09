@@ -6,5 +6,8 @@ const logInDevMode = (cb: VoidFunction) => {
   }
 };
 
-export const logging = (...args: Parameters<typeof console.log>) =>
+export const devLog = (...args: Parameters<typeof console.log>) =>
   logInDevMode(() => console.log(...args));
+
+export const devErrorLog = (...args: Parameters<typeof console.error>) =>
+  logInDevMode(() => console.error(...args));
