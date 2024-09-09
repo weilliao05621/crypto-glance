@@ -1,9 +1,11 @@
 import { createConfig, http } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
-import { injected } from "wagmi/connectors";
+import { injected, walletConnect } from "wagmi/connectors";
 
 // has setup whitelist
 const INFURA_KEY = import.meta.env.VITE_INFURA_KEY;
+export const wallectConnectProjectId = import.meta.env
+  .VITE_WALLET_CONNECT_PROJECT_ID;
 
 const mainnetHttp = INFURA_KEY
   ? http(`https://mainnet.infura.io/v3/${INFURA_KEY}`)
@@ -19,6 +21,8 @@ export const wagmiConfig = createConfig({
     [mainnet.id]: mainnetHttp,
     [sepolia.id]: sepoliaHttp,
   },
-  // TODO: may support wallet connect later. Register project on https://cloud.walletconnect.com/sign-in
-  connectors: [injected()],
+  connectors: [
+    injected(),
+    walletConnect({ projectId: wallectConnectProjectId, showQrModal: false }),
+  ],
 });
