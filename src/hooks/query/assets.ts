@@ -27,8 +27,6 @@ import {
 import type { ChainId } from "~/types";
 
 const ETHEREUM_DECIMALS = 18n;
-const AAVE_USD_DECIMALS = 8n;
-const TO_AAVE_USD_DECIMALS = 10n ** AAVE_USD_DECIMALS;
 
 export const useGetNativeAssetBalanceQuery = (props: {
   address?: Address;
@@ -237,10 +235,7 @@ export const useGetAvailableAssetsPriceQuery = (props: {
         if (!Array.isArray(prices)) return;
 
         const pricesMap = new Map(
-          tokenList.map((token, index) => [
-            token.symbol,
-            prices[index] / TO_AAVE_USD_DECIMALS,
-          ]),
+          tokenList.map((token, index) => [token.symbol, prices[index]]),
         );
 
         // FIX: currently use ERC-20 for all tokens' price, include BTC & ETH

@@ -18,16 +18,17 @@ const AssetValue = () => {
 
   const [isEmpty, data] = useMemo(() => {
     const total = totalValues.reduce((sum, cur) => {
-      return sum + cur.value;
-    }, 0n);
+      return +cur.value + sum;
+    }, 0);
 
     const values = totalValues.reduce(
       (d, cur) => {
-        if (cur.value === 0n) return d;
+        const value = +cur.value;
+        if (value === 0) return d;
         const parsedValue = {
           name: cur.asset,
           // recharts only receive number as value, wrong type will resulting in no rendering.
-          value: parseFloat(((cur.value * 100n) / total).toString()),
+          value: parseFloat(((value * 100) / total).toString()),
         };
         d.push(parsedValue);
         return d;
@@ -115,6 +116,7 @@ const renderActiveShape = (props: PieSectorDataItem) => {
       />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
       <text
+        fontSize="14px"
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
         textAnchor={textAnchor}

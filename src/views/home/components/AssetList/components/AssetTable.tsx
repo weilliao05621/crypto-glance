@@ -43,8 +43,8 @@ const TABLE_HEAD = [
     isNumeric: true,
   },
   {
-    title: "Value",
-    key: "value",
+    title: "Value (USD)",
+    key: "value-usd",
     isNumeric: true,
   },
   {
@@ -75,7 +75,7 @@ const AssetTable = (props: {
   );
 
   return (
-    <TableContainer overflowY="scroll" maxH="240px">
+    <TableContainer overflowY="scroll" maxH="240px" maxW={{ lg: "600px" }}>
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -152,9 +152,8 @@ const AssetAmount = (props: { token: ValidToken }) => {
 
 const AssetValue = (props: { token: ValidToken }) => {
   const price = useAssetsStore((state) => state.getPrice(props.token));
-  const valueString = `$${price.toString()}`;
 
-  return <span>{valueString}</span>;
+  return <span>{price}</span>;
 };
 
 const ELLIPSIS = "...";

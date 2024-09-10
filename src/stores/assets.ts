@@ -8,8 +8,11 @@ type Amount = {
 
 type AssetValueByUsd = {
   asset: ValidToken;
-  value: bigint;
+  value: string;
 };
+
+const AAVE_USD_DECIMALS = 8;
+const TO_AAVE_USD_DECIMALS = Math.pow(10, AAVE_USD_DECIMALS);
 
 interface AssetStore {
   amounts: Map<ValidToken, Amount>;
@@ -19,7 +22,7 @@ interface AssetStore {
   updatePrice: (token: ValidToken, price: bigint) => void;
   updateAllPrices: (prices: Map<ValidToken, bigint>) => void;
   getAmount: (token: ValidToken) => Amount;
-  getPrice: (token: ValidToken) => bigint;
+  getPrice: (token: ValidToken) => string;
   getAssetsValueByUsd: () => AssetValueByUsd[];
   reset: () => void;
 }
@@ -56,7 +59,8 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
     return get().amounts.get(token) ?? { value: 0n, decimals: 0n };
   },
   getPrice: (token) => {
-    return get().prices.get(token) ?? 0n;
+    const price = `${(+(get().prices.get(token) ?? 0n).toString() / TO_AAVE_USD_DECIMALS).toFixed(2)}`;
+    return price;
   },
   getAssetsValueByUsd: () => {
     const amounts = get().amounts;
@@ -69,10 +73,9 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
 
       assetsValueByUsd.push({
         asset: token,
-        value: (amount.value * price) / toDecimals,
+        value: `${+((amount.value * price) / toDecimals).toString() / TO_AAVE_USD_DECIMALS}`,
       });
     }
-
     return assetsValueByUsd;
   },
   reset: () => {
