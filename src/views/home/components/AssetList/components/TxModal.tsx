@@ -60,6 +60,9 @@ const TxModal = (props: TxModalProps) => {
                   disabled={isLoading}
                   type="text"
                   placeholder="Receiver"
+                  onChange={() => {
+                    setErrorMsg("");
+                  }}
                 />
               </Box>
               <Box>
@@ -71,6 +74,9 @@ const TxModal = (props: TxModalProps) => {
                   disabled={isLoading}
                   type="number"
                   placeholder={`Amount (in ether)`}
+                  onChange={() => {
+                    setErrorMsg("");
+                  }}
                 />
               </Box>
               <Box>

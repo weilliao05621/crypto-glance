@@ -49,6 +49,15 @@ const AssetList = () => {
   const tokens = TOKEN_MAP[chainId];
 
   const onSelectedToken = useEventCallback((args: SelectedToken) => {
+    if (!account.address) {
+      toast.set("error", {
+        title: "",
+        description: "Connect your account first!",
+        isClosable: true,
+        duration: 3_000,
+      });
+      return;
+    }
     onOpen();
     setSelectedToken({
       token: args.token,
