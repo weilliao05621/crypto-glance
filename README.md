@@ -74,10 +74,20 @@ const AssetAmount = (props: { token: ValidToken }) => {
 - use `useEventCallback` & `useEventData` to optimize rendering (ref: [rfcs](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md))
 
 #### types
-- use `ts-brand` to ensure chain id to be an unique type
+- use [`ts-brand`](src/types/brand/index.ts) to ensure chain id to be an unique type
 
 #### UI
 - make card & table config-based for maintainance
 
 #### package manager
 - `pnpm` can have better performance if combining CI/CD due to its package linking system & cached.
+
+## Demo
+
+### Connect Wallet
+
+![Connect Wallet](docs/images/connect-wallet.gif)
+
+### Send Tx
+
+![Send Tx](docs/images/send-tx.gif)
