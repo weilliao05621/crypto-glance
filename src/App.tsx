@@ -3,8 +3,7 @@ import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 
-// pages
-import HomePage from "./pages/home";
+import AppRouter from "./router";
 
 // configs
 import { queryClientConfig } from "./configs/tanstack-query";
@@ -20,7 +19,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <ChakraProvider theme={theme}>
-          <HomePage />
+          <AppRouter />
         </ChakraProvider>
       </WagmiProvider>
     </QueryClientProvider>
