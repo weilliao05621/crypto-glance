@@ -1,6 +1,8 @@
 import { memo } from "react";
 
-import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { type Address } from "viem";
+
+import { ArrowForwardIcon, CopyIcon } from "@chakra-ui/icons";
 import {
   TableContainer,
   Table,
@@ -12,6 +14,9 @@ import {
   useTheme,
   useBreakpointValue,
   Flex,
+  useClipboard,
+  useToast,
+  Text,
 } from "@chakra-ui/react";
 
 // stores
@@ -41,6 +46,11 @@ const TABLE_HEAD = [
     title: "Value",
     key: "value",
     isNumeric: true,
+  },
+  {
+    title: "Address",
+    key: "address",
+    isNumeric: false,
   },
   {
     title: null,
@@ -102,6 +112,9 @@ const AssetTable = (props: {
                   <AssetValue token={token.symbol} />
                 </Td>
                 <Td>
+                  <AssetCopyableAddress address={token?.address} />
+                </Td>
+                <Td>
                   <span
                     onClick={() => {
                       props.onSelectedToken({
@@ -142,6 +155,44 @@ const AssetValue = (props: { token: ValidToken }) => {
   const valueString = `$${price.toString()}`;
 
   return <span>{valueString}</span>;
+};
+
+const ELLIPSIS = "...";
+const SAVE_LENGTH = 6;
+
+const AssetCopyableAddress = (props: { address?: Address }) => {
+  const toast = useToast();
+  const { onCopy } = useClipboard(props?.address ?? "");
+
+  const hasAddress = !!props?.address;
+  const addressLength = hasAddress ? props.address!.length : 0;
+
+  const addressString = hasAddress
+    ? props.address!.slice(0, SAVE_LENGTH) +
+      ELLIPSIS +
+      props.address!.slice(addressLength - SAVE_LENGTH, addressLength)
+    : "-";
+
+  return (
+    <Text fontSize="12px">
+      {addressString}
+      {hasAddress && (
+        <CopyIcon
+          marginLeft={1}
+          cursor="pointer"
+          onClick={() => {
+            if (!props.address) return;
+            onCopy();
+            toast({
+              description: `Copied ${props.address} !`,
+              status: "success",
+              isClosable: true,
+            });
+          }}
+        />
+      )}
+    </Text>
+  );
 };
 
 const MemoAssetTable = memo(AssetTable);

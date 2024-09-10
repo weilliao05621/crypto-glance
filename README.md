@@ -7,8 +7,8 @@ Link: https://crypto-glance-feweil.netlify.app
 1. Fill up .env by following the `env.example`
 
 ```
-VITE_INFURA_KEY =
-VITE_WALLET_CONNECT_PROJECT_ID = 
+VITE_INFURA_KEY =  # Ethereum Mainnet & Ethereum Testnet Sepolia
+VITE_WALLET_CONNECT_PROJECT_ID =
 ```
 
 2. dev script
@@ -20,6 +20,19 @@ pnpm run dev
 ```
 
 ## Technical Decision
+### Bundler
+
+#### Why `Vite`
+- REALLY FAST even with not fully esbuild depended...😅 
+- Heavily depends on Rollup, but its v4 has switched parser to SWC 
+- Create boilerplate quickly with all setting
+- Can customize plugins & server setting
+
+#### Comparision
+- `parcel` is easy to go for a side project, but not suitable for a real produnction.
+- `Webpack` requires a lots of loaders & plugins, which are more overwhelmed when building slowly
+
+
 ### State Management 
 #### Integrate server & client state
 - map server data with token list to use client data as single source
