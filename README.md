@@ -1,5 +1,7 @@
 # CryptoGlance
 
+Link: https://crypto-glance-feweil.netlify.app
+
 ## Setup and running instructions
 
 1. Fill up .env by following the `env.example`
@@ -41,6 +43,17 @@ const AssetAmount = (props: { token: ValidToken }) => {
   return <span>{valueString}</span>;
 };
 ```
+
+### Real time data
+
+#### Price oracle: AAVE
+- great API usage & npm pkg for developing
+
+#### Watch transaction receipt
+- can check success for all types of txs
+- can self-handle polling with `useTransactionReceipt`
+  - found wagmi's watchers to keep polling block status even if unmounted
+
 
 ### Optimization
 
