@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { useAccountEffect } from "wagmi";
 import { type Address } from "viem";
@@ -23,6 +23,8 @@ const UpdateAssetsOnAccountConnection = (props: {
 }) => {
   const resetAssetsStore = useAssetsStore((state) => state.reset);
 
+  const prevAccountAddress = useRef<Address | null>(null);
+
   const getNativeAssetBalanceQuery = useGetNativeAssetBalanceQuery({
     address: props.address,
     chainId: props.chainId,
@@ -40,17 +42,20 @@ const UpdateAssetsOnAccountConnection = (props: {
 
   useEffect(() => {
     if (!props.enabled) return;
-
+    if (prevAccountAddress.current === props.address) {
+      return;
+    }
+    prevAccountAddress.current = props.address;
     getNativeAssetBalanceQuery.refetch();
     getAvailableErc20AssetsBalanceQuery.refetch();
     getAvailableAssetsPriceQuery.refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.enabled,
+    props.address,
     getAvailableErc20AssetsBalanceQuery.refetch,
     getNativeAssetBalanceQuery.refetch,
     getAvailableAssetsPriceQuery.refetch,
-    resetAssetsStore,
   ]);
 
   useAccountEffect({
