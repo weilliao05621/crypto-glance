@@ -153,7 +153,7 @@ const AssetAmount = (props: { token: ValidToken }) => {
 const AssetValue = (props: { token: ValidToken }) => {
   const price = useAssetsStore((state) => state.getPrice(props.token));
 
-  return <span>{price}</span>;
+  return <span>${price}</span>;
 };
 
 const ELLIPSIS = "...";

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { ValidToken } from "~/constants/tokens";
+import { handleNumberToFloat } from "~/utils/unit";
 
 type Amount = {
   value: bigint;
@@ -59,7 +60,9 @@ export const useAssetsStore = create<AssetStore>((set, get) => ({
     return get().amounts.get(token) ?? { value: 0n, decimals: 0n };
   },
   getPrice: (token) => {
-    const price = `${(+(get().prices.get(token) ?? 0n).toString() / TO_AAVE_USD_DECIMALS).toFixed(2)}`;
+    const priceSource = get().prices.get(token) ?? 0n;
+    const toDecimals = `${parseFloat(priceSource.toString()) / TO_AAVE_USD_DECIMALS}`;
+    const price = handleNumberToFloat(toDecimals);
     return price;
   },
   getAssetsValueByUsd: () => {
