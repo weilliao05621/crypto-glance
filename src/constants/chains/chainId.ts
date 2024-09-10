@@ -1,8 +1,8 @@
-import type { ChainId as ChainIdType } from "~/types";
+import type { ChainId } from "~/types";
 
-export const ChainId = {
-  ETHEREUM: 1 as ChainIdType,
-  SEPOLIA: 11155111 as ChainIdType,
+export const CHAIN_ID = {
+  ETHEREUM: 1 as ChainId,
+  SEPOLIA: 11155111 as ChainId,
 } as const;
 
-export type ValidChainId = (typeof ChainId)[keyof typeof ChainId];
+export type ValidChainId = (typeof CHAIN_ID)[keyof typeof CHAIN_ID];

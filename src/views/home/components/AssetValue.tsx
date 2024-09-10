@@ -16,16 +16,12 @@ const AssetValue = () => {
 
   const chartFill = useTheme().colors.gray[500];
 
-  const total = useMemo(
-    () =>
-      totalValues.reduce((sum, cur) => {
-        return sum + cur.value;
-      }, 0n),
-    [totalValues],
-  );
+  const [isEmpty, data] = useMemo(() => {
+    const total = totalValues.reduce((sum, cur) => {
+      return sum + cur.value;
+    }, 0n);
 
-  const data = useMemo(() => {
-    return totalValues.reduce(
+    const values = totalValues.reduce(
       (d, cur) => {
         if (cur.value === 0n) return d;
         const parsedValue = {
@@ -38,11 +34,11 @@ const AssetValue = () => {
       },
       [] as Array<{ name: string; value: number }>,
     );
-  }, [totalValues, total]);
 
-  const isEmpty = useMemo(() => {
-    return data.every((d) => d.value === 0);
-  }, [data]);
+    const isEmpty = values.every((d) => d.value === 0);
+
+    return [isEmpty, values] as const;
+  }, [totalValues]);
 
   return (
     <Center w="100%" h="100%">

@@ -44,7 +44,7 @@ export const useGetNativeAssetBalanceQuery = (props: {
     },
   });
 
-  // hack: wagmi will generate new reference on every call
+  // // hack: wagmi will generate new reference on every call
   const memoQuery = useEventData(query);
 
   const refetch = useCallback(
