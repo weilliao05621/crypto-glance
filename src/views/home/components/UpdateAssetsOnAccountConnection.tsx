@@ -24,6 +24,7 @@ const UpdateAssetsOnAccountConnection = (props: {
   const resetAssetsStore = useAssetsStore((state) => state.reset);
 
   const prevAccountAddress = useRef<Address | null>(null);
+  const prevChain = useRef<ChainId | null>(null);
 
   const getNativeAssetBalanceQuery = useGetNativeAssetBalanceQuery({
     address: props.address,
@@ -42,20 +43,31 @@ const UpdateAssetsOnAccountConnection = (props: {
 
   useEffect(() => {
     if (!props.enabled) return;
-    if (prevAccountAddress.current === props.address) {
+
+    const shouldFetch =
+      prevAccountAddress.current !== props.address ||
+      prevChain.current !== props.chainId;
+
+    if (!shouldFetch) {
       return;
     }
+
+    prevChain.current = props.chainId;
     prevAccountAddress.current = props.address;
     getNativeAssetBalanceQuery.refetch();
     getAvailableErc20AssetsBalanceQuery.refetch();
     getAvailableAssetsPriceQuery.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log("refetching");
   }, [
     props.enabled,
     props.address,
+    props.chainId,
     getAvailableErc20AssetsBalanceQuery.refetch,
     getNativeAssetBalanceQuery.refetch,
     getAvailableAssetsPriceQuery.refetch,
+    getNativeAssetBalanceQuery,
+    getAvailableErc20AssetsBalanceQuery,
+    getAvailableAssetsPriceQuery,
   ]);
 
   useAccountEffect({
