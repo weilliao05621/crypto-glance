@@ -4,7 +4,7 @@ import { AaveV3Ethereum, AaveV3Sepolia } from "@bgd-labs/aave-address-book";
 import { type Address } from "viem";
 
 // constants
-import { ChainId, type ValidChainId } from "../chains/chainId";
+import { CHAIN_ID, type ValidChainId } from "../chains/chainId";
 import { TOKEN, type ValidToken } from "./enum";
 
 // images
@@ -48,7 +48,7 @@ const TOKEN_ICON_MAP = {
 } as const;
 
 export const TOKEN_MAP: TOKEN_LIST_MAP = {
-  [ChainId.ETHEREUM]: {
+  [CHAIN_ID.ETHEREUM]: {
     [TOKEN.ETH]: {
       name: TOKEN_NAME_MAP[TOKEN.ETH],
       symbol: TOKEN.ETH,
@@ -98,7 +98,7 @@ export const TOKEN_MAP: TOKEN_LIST_MAP = {
       decimals: AaveV3Ethereum.ASSETS.WBTC.decimals,
     },
   },
-  [ChainId.SEPOLIA]: {
+  [CHAIN_ID.SEPOLIA]: {
     [TOKEN.ETH]: {
       name: TOKEN_NAME_MAP[TOKEN.ETH],
       symbol: TOKEN.ETH,
@@ -153,6 +153,6 @@ export const TOKEN_MAP: TOKEN_LIST_MAP = {
 export const AVAILABLE_NATIVE_TOKEN: {
   [C in ValidChainId]: Pick<typeof TOKEN, "ETH">["ETH"];
 } = {
-  [ChainId.ETHEREUM]: TOKEN.ETH,
-  [ChainId.SEPOLIA]: TOKEN.ETH,
+  [CHAIN_ID.ETHEREUM]: TOKEN.ETH,
+  [CHAIN_ID.SEPOLIA]: TOKEN.ETH,
 } as const;
