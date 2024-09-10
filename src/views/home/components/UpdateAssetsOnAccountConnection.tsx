@@ -11,7 +11,7 @@ import {
   useGetAvailableAssetsPriceQuery,
   useGetAvailableErc20AssetsBalanceQuery,
   useGetNativeAssetBalanceQuery,
-} from "../../../hooks/query/assets";
+} from "~/hooks/query/assets";
 
 // types
 import type { ChainId } from "~/types";
